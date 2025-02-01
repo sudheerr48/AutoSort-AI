@@ -11,10 +11,10 @@ import os
 import logging
 from typing import List, Dict, Tuple
 from pathlib import Path
-from langchain.llms import Ollama
+from langchain_community.llms import Ollama
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader
 
 from config.categories import document_categories
 from config.logging_config import setup_logging
@@ -48,9 +48,12 @@ class DocumentClassifier:
 
         {categories}
 
-        Given the following document content, classify it into the most appropriate subcategory only.
-        Provide just the subcategory name without any explanation:
+        Given the following document content, classify it into the most appropriate category.
+        Use the exact category name from the list above.
+        If it fits into both a main category and subcategory, use the format: "MainCategory > Subcategory"
+        Provide just the category without any explanation.
 
+        Document content:
         {document_text}
         """
 

@@ -10,7 +10,7 @@ import os
 import logging
 from typing import List, Tuple
 from pathlib import Path
-from langchain.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader
 
 logger = logging.getLogger("document_classifier")
 

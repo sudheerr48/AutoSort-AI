@@ -13,6 +13,17 @@ from typing import Dict
 
 logger = logging.getLogger("document_classifier")
 
+def sanitize_path(path_str: str) -> str:
+    """Sanitize the path string to be valid for all operating systems."""
+    # Remove or replace invalid characters
+    invalid_chars = ['<', '>', ':', '"', '/', '\\', '|', '?', '*']
+    result = path_str
+    for char in invalid_chars:
+        result = result.replace(char, '_')
+    # Remove leading/trailing spaces and dots
+    result = result.strip('. ')
+    return result
+
 def create_category_folders(base_output_dir: str) -> Path:
     """Create the base output directory structure.
     
@@ -43,28 +54,28 @@ def move_document_to_category(
         bool: True if successful, False otherwise
     """
     try:
-        # Split category into main and sub if present
-        category_parts = [part.strip() for part in category.split('>')]
-        if len(category_parts) == 2:
-            main_category, subcategory = category_parts
-        else:
-            main_category = subcategory = category_parts[0]
-            
-        # Create category directories
-        category_dir = output_base_dir / main_category / subcategory
-        category_dir.mkdir(parents=True, exist_ok=True)
+        # Clean up category name and create proper path structure
+        category = category.replace(" > ", "/").replace(">", "/")
+        category_parts = [sanitize_path(part.strip()) for part in category.split("/")]
+        
+        # Create category path
+        category_path = output_base_dir
+        for part in category_parts:
+            category_path = category_path / part
+            category_path.mkdir(parents=True, exist_ok=True)
         
         # Create destination path
-        dest_path = category_dir / file_path.name
+        dest_path = category_path / file_path.name
         
         # Handle duplicate filenames
         counter = 1
+        original_stem = dest_path.stem
         while dest_path.exists():
-            new_name = f"{file_path.stem}_{counter}{file_path.suffix}"
-            dest_path = category_dir / new_name
+            new_name = f"{original_stem}_{counter}{dest_path.suffix}"
+            dest_path = category_path / new_name
             counter += 1
         
-        # Move the file
+        # Copy the file
         shutil.copy2(file_path, dest_path)
         logger.info(f"Moved {file_path.name} to {dest_path}")
         return True
