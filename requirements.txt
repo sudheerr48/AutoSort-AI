@@ -1,0 +1,6 @@
+langchain
+pypdf
+pandas
+faiss-cpu
+huggingface-hub
+cryptography 
