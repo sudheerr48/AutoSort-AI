@@ -1,3 +1,11 @@
+"""
+Document Classifier - Document Processor
+Copyright (c) 2024 Document Classifier
+Licensed under the MIT License (see LICENSE file for details)
+
+Utility functions for processing PDF documents.
+"""
+
 import os
 import logging
 from typing import List, Tuple

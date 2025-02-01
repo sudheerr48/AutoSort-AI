@@ -2,6 +2,10 @@
 
 A professional document classification system that automatically categorizes PDF documents into predefined categories using LLMs.
 
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
 ## Features
 
 - Automatic classification of PDF documents into detailed categories
@@ -30,12 +34,33 @@ pip install -r requirements.txt
 
 ```bash
 export DOCUMENTS_PATH=/path/to/your/documents
+export OUTPUT_PATH=/path/to/output/directory
 ```
 
 2. Run the classifier:
 
 ```bash
 python document_classifier.py
+```
+
+The script will:
+- Load PDF documents from the input directory
+- Classify each document
+- Create category folders in the output directory
+- Move classified documents to their respective category folders
+
+## Output Structure
+
+```
+classified_documents/
+├── Work-Related/
+│   ├── Employment Contracts/
+│   ├── Technical Documentation/
+│   └── Payslips & Financial Records/
+├── College/Academics/
+│   ├── Lecture Notes/
+│   └── Research Papers/
+└── ...
 ```
 
 ## Project Structure

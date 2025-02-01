@@ -1,4 +1,10 @@
-"""Configuration file containing document categories and subcategories."""
+"""
+Document Classifier - Categories Configuration
+Copyright (c) 2024 Document Classifier
+Licensed under the MIT License (see LICENSE file for details)
+
+Configuration file containing document categories and subcategories.
+"""
 
 document_categories = {
     "Work-Related": [

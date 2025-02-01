@@ -1,3 +1,11 @@
+"""
+Document Classifier - Logging Configuration
+Copyright (c) 2024 Document Classifier
+Licensed under the MIT License (see LICENSE file for details)
+
+Logging configuration for the document classifier application.
+"""
+
 import logging
 import sys
 from pathlib import Path
