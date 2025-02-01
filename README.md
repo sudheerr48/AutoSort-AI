@@ -2,6 +2,17 @@
 
 A professional document classification system that automatically categorizes PDF documents into predefined categories using LLMs.
 
+## Prerequisites
+
+- Python 3.8 or higher
+- pip3 (Python3 package installer)
+
+To verify your Python installation:
+```bash
+python3 --version  # Should show Python 3.x.x
+pip3 --version    # Should show pip 21.x.x or higher
+```
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
@@ -16,17 +27,55 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Installation
 
 1. Clone the repository:
-bash
+```bash
 git clone <repository-url>
 cd document-classifier
+```
 
-2. Install dependencies:
-bash
-pip install -r requirements.txt
+2. Create and activate a virtual environment:
+```bash
+# On macOS/Linux:
+python3 -m venv .venv
+source .venv/bin/activate
 
-3. Install and start Ollama:
+# On Windows:
+python3 -m venv .venv
+.venv\Scripts\activate
+```
+
+After activation, your prompt should change to show (.venv).
+
+3. Install dependencies:
+```bash
+# Make sure you're in the virtual environment (should see (.venv) in prompt)
+pip3 install --upgrade pip  # Upgrade pip first
+pip3 install -r requirements.txt
+```
+
+4. Install and start Ollama:
 - Follow instructions at [Ollama's website](https://ollama.ai)
 - Pull the Mistral model: `ollama pull mistral`
+
+## Troubleshooting
+
+If you encounter pip-related issues:
+
+1. Verify Python3 and pip3 installation:
+```bash
+which python3  # Should point to Python 3.x installation
+which pip3     # Should point to pip3 installation
+```
+
+2. If pip3 commands fail, try using these alternatives:
+```bash
+python3 -m pip install <package>  # Most reliable method
+```
+
+3. For macOS users:
+- If Python3 is not installed:
+```bash
+brew install python3  # Installs both Python3 and pip3
+```
 
 ## Usage
 
@@ -40,7 +89,7 @@ export OUTPUT_PATH=/path/to/output/directory
 2. Run the classifier:
 
 ```bash
-python document_classifier.py
+python3 document_classifier.py
 ```
 
 The script will:
