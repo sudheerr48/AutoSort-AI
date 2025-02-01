@@ -106,7 +106,8 @@ class DocumentClassifier:
         self,
         documents: List[Tuple[str, str]],
         input_dir: Path,
-        output_dir: Path
+        output_dir: Path,
+        create_backups: bool = True
     ) -> List[Dict[str, str]]:
         """Classify documents and organize them into category folders.
         
@@ -114,15 +115,24 @@ class DocumentClassifier:
             documents: List of tuples containing (file_name, text_content)
             input_dir: Directory containing source documents
             output_dir: Base directory for organized output
+            create_backups: Whether to create backups before moving files
             
         Returns:
             List of dictionaries containing classification results
         """
+        if not documents:
+            logger.warning("No documents provided for classification")
+            return []
+
         # First classify all documents
         classified_docs = self.classify_documents(documents)
         
         # Create output directory
-        output_base = create_category_folders(output_dir)
+        try:
+            output_base = create_category_folders(output_dir)
+        except Exception as e:
+            logger.error(f"Failed to create output directory structure: {str(e)}")
+            return classified_docs
         
         # Move files to their respective categories
         for doc in classified_docs:
@@ -131,15 +141,47 @@ class DocumentClassifier:
             
             if category.startswith("ERROR:"):
                 logger.warning(f"Skipping file organization for {file_name} due to classification error")
+                doc['status'] = "CLASSIFICATION_FAILED"
+                doc['error_message'] = category
                 continue
                 
             source_path = Path(input_dir) / file_name
-            if move_document_to_category(source_path, category, output_base):
+            if not source_path.exists():
+                logger.error(f"Source file not found: {source_path}")
+                doc['status'] = "FILE_NOT_FOUND"
+                continue
+                
+            if move_document_to_category(source_path, category, output_base, create_backups):
+                doc['status'] = "SUCCESS"
                 doc['new_location'] = str(output_base / category / file_name)
             else:
-                doc['new_location'] = "MOVE_FAILED"
+                doc['status'] = "MOVE_FAILED"
+                doc['error_message'] = "Failed to move file to category folder"
+        
+        # Print summary
+        self._print_classification_summary(classified_docs)
         
         return classified_docs
+
+    def _print_classification_summary(self, results: List[Dict[str, str]]) -> None:
+        """Print a summary of the classification results."""
+        total = len(results)
+        successful = sum(1 for doc in results if doc.get('status') == "SUCCESS")
+        failed = total - successful
+        
+        logger.info("\nClassification Summary:")
+        logger.info(f"Total documents processed: {total}")
+        logger.info(f"Successfully classified and moved: {successful}")
+        logger.info(f"Failed: {failed}")
+        
+        if failed > 0:
+            logger.info("\nFailed Documents:")
+            for doc in results:
+                if doc.get('status') != "SUCCESS":
+                    logger.info(f"  - {doc['file_name']}")
+                    logger.info(f"    Status: {doc.get('status')}")
+                    if 'error_message' in doc:
+                        logger.info(f"    Error: {doc['error_message']}")
 
 def main():
     # Set up logging
