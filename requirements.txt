@@ -1,6 +1,7 @@
-langchain
-pypdf
-pandas
-faiss-cpu
-huggingface-hub
-cryptography 
+langchain>=0.1.0
+langchain-community>=0.0.10
+pypdf>=3.0.0
+pandas>=2.0.0
+faiss-cpu>=1.7.4
+huggingface-hub>=0.20.0
+cryptography>=41.0.0 

@@ -50,6 +50,9 @@ After activation, your prompt should change to show (.venv).
 # Make sure you're in the virtual environment (should see (.venv) in prompt)
 pip3 install --upgrade pip  # Upgrade pip first
 pip3 install -r requirements.txt
+
+# Verify installation
+pip3 list | grep langchain  # Should show langchain and langchain-community
 ```
 
 4. Install and start Ollama:
@@ -58,7 +61,7 @@ pip3 install -r requirements.txt
 
 ## Troubleshooting
 
-If you encounter pip-related issues:
+If you encounter installation issues:
 
 1. Verify Python3 and pip3 installation:
 ```bash
@@ -66,12 +69,23 @@ which python3  # Should point to Python 3.x installation
 which pip3     # Should point to pip3 installation
 ```
 
-2. If pip3 commands fail, try using these alternatives:
+2. If pip3 commands fail, try:
 ```bash
-python3 -m pip install <package>  # Most reliable method
+python3 -m pip install -r requirements.txt  # Alternative installation method
 ```
 
-3. For macOS users:
+3. If you see package conflicts:
+```bash
+# Clean install in a fresh virtual environment
+deactivate  # If already in a virtual environment
+rm -rf .venv
+python3 -m venv .venv
+source .venv/bin/activate
+pip3 install --upgrade pip
+pip3 install -r requirements.txt
+```
+
+4. For macOS users:
 - If Python3 is not installed:
 ```bash
 brew install python3  # Installs both Python3 and pip3
@@ -80,14 +94,12 @@ brew install python3  # Installs both Python3 and pip3
 ## Usage
 
 1. Set your documents path:
-
 ```bash
 export DOCUMENTS_PATH=/path/to/your/documents
 export OUTPUT_PATH=/path/to/output/directory
 ```
 
 2. Run the classifier:
-
 ```bash
 python3 document_classifier.py
 ```
@@ -127,5 +139,5 @@ document-classifier/
 
 ## License
 
-MIT License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
