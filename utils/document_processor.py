@@ -12,6 +12,7 @@ from typing import List, Tuple, Dict
 from pathlib import Path
 from langchain_community.document_loaders import PyPDFLoader
 from pypdf.errors import PdfReadError
+from config.processing_config import document_processing as dp_config
 
 logger = logging.getLogger("document_classifier")
 
@@ -43,7 +44,10 @@ def load_pdfs_from_folder(folder_path: str) -> List[Tuple[str, str]]:
         logger.error(error_msg)
         raise FileNotFoundError(error_msg)
     
-    pdf_files = list(folder_path.glob("*.pdf"))
+    # Filter for supported file types
+    pdf_files = [f for f in folder_path.iterdir() 
+                 if f.suffix.lower() in dp_config["supported_extensions"]]
+    
     logger.info(f"Found {len(pdf_files)} PDF files")
     
     if not pdf_files:
@@ -60,8 +64,10 @@ def load_pdfs_from_folder(folder_path: str) -> List[Tuple[str, str]]:
             
             # Check file size
             file_size = pdf_file.stat().st_size
-            if file_size == 0:
-                raise DocumentProcessingError(f"File is empty: {pdf_file.name}")
+            if file_size == 0 or file_size < dp_config["min_file_size"]:
+                raise DocumentProcessingError(f"File is too small: {pdf_file.name}")
+            if file_size > dp_config["max_file_size"]:
+                raise DocumentProcessingError(f"File exceeds size limit: {pdf_file.name}")
             
             # Try to load and process the PDF
             loader = PyPDFLoader(str(pdf_file))
@@ -69,12 +75,21 @@ def load_pdfs_from_folder(folder_path: str) -> List[Tuple[str, str]]:
             
             if not pages:
                 raise DocumentProcessingError(f"No content found in {pdf_file.name}")
-                
-            text = "\n".join([page.page_content for page in pages])
             
-            if not text.strip():
+            # Limit to configured number of pages
+            pages = pages[:dp_config["max_pages_to_read"]]
+            
+            # Extract and combine text from pages
+            text_parts = []
+            for page in pages:
+                page_text = page.page_content[:dp_config["max_chars_per_page"]]
+                if page_text.strip():
+                    text_parts.append(page_text)
+            
+            if not text_parts:
                 raise DocumentProcessingError(f"No text content found in {pdf_file.name}")
-                
+            
+            text = "\n".join(text_parts)
             documents.append((pdf_file.name, text))
             logger.debug(f"Successfully processed: {pdf_file.name}")
             
